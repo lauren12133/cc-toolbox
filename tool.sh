@@ -358,8 +358,8 @@ acme_cfapiNTLD(){
 }
 
 checktls() {
-    if [[ -f /root/cert.crt && -f /root/private.key ]]; then
-        if [[ -s /root/cert.crt && -s /root/private.key ]]; then
+    if [[ -f /root/cert.pem && -f /root/key.pem ]]; then
+        if [[ -s /root/cert.pem && -s /root/key.pem ]]; then
             if [[ -n $(type -P wg-quick) && -n $(type -P wgcf) ]]; then
                 wg-quick up wgcf >/dev/null 2>&1
             fi
@@ -463,7 +463,7 @@ menu() {
     echo -e " ${GREEN}8.${PLAIN} 手动续期已申请的证书"
     echo -e " ${GREEN}9.${PLAIN} 切换证书颁发机构"
     echo " -------------"
-    echo -e " ${GREEN}0.${PLAIN} 退出脚本"
+    echo -e " ${GREEN}0.${PLAIN} 返回主菜单"
     echo ""
     read -rp "请输入选项 [0-9]: " NumberInput
     case "$NumberInput" in
