@@ -1,4 +1,5 @@
 #!/bin/bash
+#脚本灵感大部分来自于misaka（以删库）
 
 RED="\033[31m"
 GREEN="\033[32m"
@@ -28,6 +29,10 @@ back2menu(){
 }
 
 
+back1menu(){
+  bash tool.sh
+}
+
 root_user(){
   REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'" "alpine")
   RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS" "Alpine")
@@ -47,7 +52,8 @@ root_user(){
   [[ ! -f /etc/ssh/sshd_config ]] && sudo ${PACKAGE_UPDATE[int]} && sudo ${PACKAGE_INSTALL[int]} openssh-server
   [[ -z $(type -P curl) ]] && sudo ${PACKAGE_UPDATE[int]} && sudo ${PACKAGE_INSTALL[int]} curl
 
-  IP=$(curl -sm8 ip.sb)
+  IP=$(curl -s4m10 https://ip.gs)
+  IP6=$(curl -s6m10 https://ip.gs)
 
   sudo lsattr /etc/passwd /etc/shadow >/dev/null 2>&1
   sudo chattr -i /etc/passwd /etc/shadow >/dev/null 2>&1
@@ -68,20 +74,13 @@ root_user(){
   sudo service sshd restart >/dev/null 2>&1
 
   yellow "VPS root登录信息设置完成！"
-  green "VPS登录地址：$IP:$sshport"
+  green "VPS登录地址：$IP:$sshport: $IP6:$sshport"
   green "用户名：root"
   green "密码：$password"
   yellow "请妥善保存好登录信息！然后重启VPS确保设置已保存！"
   back2menu
 }
 
-tcp_bbr(){
-  echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
-  echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
-  sysctl -p
-  lsmod | grep bbr
-  back2menu
-}
 
 tcp_up(){
 cat > '/etc/sysctl.conf' << EOF
@@ -142,7 +141,9 @@ net.core.default_qdisc=fq
 net.ipv4.ping_group_range=0 2147483647
 EOF
 sysctl -p /etc/sysctl.conf > /dev/null
-  back2menu
+bbr=$(lsmod | grep bbr)
+yellow "$bbr"
+back2menu
 }
 
 acme_rg(){
@@ -225,9 +226,7 @@ install_acme(){
 }
 
 check_80(){
-    # 感谢Wulabing前辈提供的检查80端口思路
-    # Source: https://github.com/wulabing/Xray_onekey
-    
+ 
     if [[ -z $(type -P lsof) ]]; then
         ${PACKAGE_UPDATE[int]}
         ${PACKAGE_INSTALL[int]} lsof
@@ -261,8 +260,8 @@ acme_standalone(){
         wg-quick down wgcf >/dev/null 2>&1
     fi
     
-    ipv4=$(curl -s4m10 https://ip.gs)
-    ipv6=$(curl -s6m10 https://ip.gs)
+    ipv4=$(curl 4.ipw.cn )
+    ipv6=$(curl 6.ipw.cn )
     
     echo ""
     yellow "在使用80端口申请模式时, 请先将您的域名解析至你的VPS的真实IP地址, 否则会导致证书申请失败"
@@ -282,10 +281,10 @@ acme_standalone(){
     domainIP=$(curl -sm8 ipget.net/?ip="${domain}")
     
     if [[ $domainIP == $ipv6 ]]; then
-        bash ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256 --listen-v6
+        bash ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256 --ecc --renew-hook --listen-v6
     fi
     if [[ $domainIP == $ipv4 ]]; then
-        bash ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256
+        bash ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256 --ecc --renew-hook
     fi
     
     if [[ -n $(echo $domainIP | grep nginx) ]]; then
@@ -301,12 +300,11 @@ acme_standalone(){
             green "建议如下："
             yellow "1. 请确保CloudFlare小云朵为关闭状态(仅限DNS), 其他域名解析或CDN网站设置同理"
             yellow "2. 请检查DNS解析设置的IP是否为VPS的真实IP"
-            yellow "3. 脚本可能跟不上时代, 建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
-            exit 1
+            yellow "3. 脚本可能跟不上时代, 建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"  
         fi
     fi
     
-    bash ~/.acme.sh/acme.sh --install-cert -d ${domain} --key-file /root/private.key --fullchain-file /root/cert.crt --ecc
+    bash ~/.acme.sh/acme.sh --install-cert -d ${domain} --ecc --key-file /root/key.pem --fullchain-file /root/cert.pem
     checktls
 }
 
@@ -326,11 +324,11 @@ acme_cfapiTLD(){
     [[ -z $domain ]] && red "未输入CloudFlare的登录邮箱, 无法执行操作!" && exit 1
     export CF_Email="$CFemail"
     if [[ -z $ipv4 ]]; then
-        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "${domain}" -k ec-256 --listen-v6
+        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "${domain}" -k ec-256 --ecc --renew-hook --listen-v6
     else
-        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "${domain}" -k ec-256
+        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "${domain}" -k ec-256 --ecc --renew-hook
     fi
-    bash ~/.acme.sh/acme.sh --install-cert -d "${domain}" --key-file /root/private.key --fullchain-file /root/cert.crt --ecc
+    bash ~/.acme.sh/acme.sh --install-cert -d "${domain}" --ecc --key-file /root/key.pem --fullchain-file /root/cert.pem
     checktls
 }
 
@@ -351,11 +349,11 @@ acme_cfapiNTLD(){
     [[ -z $domain ]] && red "未输入CloudFlare的登录邮箱, 无法执行操作!" && exit 1
     export CF_Email="$CFemail"
     if [[ -z $ipv4 ]]; then
-        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "*.${domain}" -d "${domain}" -k ec-256 --listen-v6
+        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "*.${domain}" -d "${domain}" -k ec-256 --ecc --renew-hook --listen-v6
     else
-        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "*.${domain}" -d "${domain}" -k ec-256
+        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "*.${domain}" -d "${domain}" -k ec-256 --ecc --renew-hook
     fi
-    bash ~/.acme.sh/acme.sh --install-cert -d "*.${domain}" --key-file /root/private.key --fullchain-file /root/cert.crt --ecc
+    bash ~/.acme.sh/acme.sh --install-cert -d "*.${domain}" --ecc --key-file /root/key.pem --fullchain-file /root/cert.pem
     checktls
 }
 
@@ -367,9 +365,9 @@ checktls() {
             fi
             sed -i '/--cron/d' /etc/crontab >/dev/null 2>&1
             echo "0 0 * * * root bash /root/.acme.sh/acme.sh --cron -f >/dev/null 2>&1" >> /etc/crontab
-            green "证书申请成功! 脚本申请到的证书 (cert.crt) 和私钥 (private.key) 文件已保存到 /root 文件夹下"
-            yellow "证书crt文件路径如下: /root/cert.crt"
-            yellow "私钥key文件路径如下: /root/private.key"
+            green "证书申请成功! 脚本申请到的证书 (/root/cert.pem) 和私钥 (/root/key.pem) 文件已保存到 /root 文件夹下"
+            yellow "证书crt文件路径如下: /root/cert.pem"
+            yellow "私钥key文件路径如下: /root/key.pem"
             back2menu
         else
             if [[ -n $(type -P wg-quick) && -n $(type -P wgcf) ]]; then
@@ -400,7 +398,7 @@ revoke_cert() {
         bash ~/.acme.sh/acme.sh --revoke -d ${domain} --ecc
         bash ~/.acme.sh/acme.sh --remove -d ${domain} --ecc
         rm -rf ~/.acme.sh/${domain}_ecc
-        rm -f /root/cert.crt /root/private.key
+        rm -f /root/cert.pem /root/key.pem
         green "撤销${domain}的域名证书成功"
         back2menu
     else
@@ -478,7 +476,7 @@ menu() {
         7) revoke_cert ;;
         8) renew_cert ;;
         9) switch_provider ;;
-        *) back2menu ;;
+        *) back1menu ;;
     esac
 }
     menu
@@ -487,25 +485,23 @@ menu() {
 menu(){
 	clear
 	red "=================================="
-	green "             cc tool              "
-	red "          cc liux一键运行脚本    "
+	green "          cc tool              "
+	red "        cc liux一键运行脚本    "
 	echo "                           "
 	red "=================================="
 	echo "                           "
 	green "1. root/ssh登录/改密码/ssh端口"
-	green "2. 设置bbr"
-	green "3. tcp调优"
-        green "4. acme一键注册证书"
-        green "5. 卸载程序"
+	green "2. tcp调优"
+     green "3. acme一键注册证书"
+     green "4. 卸载程序"
 	green "0. 退出"
 	echo "         "
 	read -p "请输入数字:" NumberInput
 	case "$NumberInput" in
 		1) root_user ;;
-		2) tcp_bbr ;;
-		3) tcp_up ;;
-		4) acme_rg ;;
-                5) rm -rf /root/tool.sh && read -p "回车重置变量:" NumberInput ;;
+		2) tcp_up ;;
+		3) acme_rg ;;
+          4) rm -rf /root/tool.sh && read -p "回车重置变量:" NumberInput ;;
 		0) exit 1 ;;
 	esac
 }
