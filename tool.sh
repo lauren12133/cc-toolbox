@@ -501,10 +501,10 @@ menu(){
 	echo "         "
 	read -p "请输入数字:" NumberInput
 	case "$NumberInput" in
-		1) get_speedtest ;;
-		2) run_speedtest ;;
-		3) 1run_speedtest ;;
-		4) server ;;
+		1) root_user ;;
+		2) tcp_bbr ;;
+		3) tcp_up ;;
+		4) acme_rg ;;
                 5) rm -rf /root/tool.sh && read -p "回车重置变量:" NumberInput ;;
 		0) exit 1 ;;
 	esac
