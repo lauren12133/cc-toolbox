@@ -80,6 +80,11 @@ root_user(){
   back2menu
 }
 
+install_xui(){
+bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
+yellow "x-ui安装完成"
+back2menu
+}
 
 tcp_up(){
 cat > '/etc/sysctl.conf' << EOF
@@ -491,8 +496,9 @@ menu(){
 	echo "                           "
 	green "1. root/ssh登录/改密码/ssh端口"
 	green "2. tcp调优"
-     green "3. acme一键注册证书"
-     green "4. 卸载程序"
+        green "3. acme一键注册证书"
+	green "4. 安装x-ui"
+        green "5. 卸载程序"
 	green "0. 退出"
 	echo "         "
 	read -p "请输入数字:" NumberInput
@@ -500,7 +506,8 @@ menu(){
 		1) root_user ;;
 		2) tcp_up ;;
 		3) acme_rg ;;
-          4) rm -rf /root/tool.sh && read -p "回车重置变量:" NumberInput ;;
+		4) install_xui ;;
+                5) rm -rf /root/tool.sh && read -p "回车重置变量:" NumberInput ;;
 		0) exit 1 ;;
 	esac
 }
