@@ -264,8 +264,8 @@ acme_standalone(){
         wg-quick down wgcf >/dev/null 2>&1
     fi
     
-    ipv4=$(curl 4.ipw.cn )
-    ipv6=$(curl 6.ipw.cn )
+    ipv4=$(curl -s4m10 https://ip.gs)
+    ipv6=$(curl -s6m10 https://ip.gs)
     
     echo ""
     yellow "在使用80端口申请模式时, 请先将您的域名解析至你的VPS的真实IP地址, 否则会导致证书申请失败"
@@ -285,10 +285,10 @@ acme_standalone(){
     domainIP=$(curl -sm8 ipget.net/?ip="${domain}")
     
     if [[ $domainIP == $ipv6 ]]; then
-        bash ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256 --ecc --renew-hook --listen-v6
+        bash ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256 --renew-hook --listen-v6 --install-cert -d ${domain} --key-file /root/key.pem --fullchain-file /root/cert.pem --ecc
     fi
     if [[ $domainIP == $ipv4 ]]; then
-        bash ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256 --ecc --renew-hook
+        bash ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256 --renew-hook --install-cert -d ${domain} --key-file /root/key.pem --fullchain-file /root/cert.pem --ecc
     fi
     
     if [[ -n $(echo $domainIP | grep nginx) ]]; then
@@ -304,11 +304,11 @@ acme_standalone(){
             green "建议如下："
             yellow "1. 请确保CloudFlare小云朵为关闭状态(仅限DNS), 其他域名解析或CDN网站设置同理"
             yellow "2. 请检查DNS解析设置的IP是否为VPS的真实IP"
-            yellow "3. 脚本可能跟不上时代, 建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"  
+            yellow "3. 脚本可能跟不上时代, 建议截图发布到GitHub Issues、GitLab Issues、论坛或TG群询问"
+            exit 1
         fi
     fi
     
-    bash ~/.acme.sh/acme.sh --install-cert -d ${domain} --ecc --key-file /root/key.pem --fullchain-file /root/cert.pem
     checktls
 }
 
