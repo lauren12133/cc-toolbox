@@ -51,8 +51,8 @@ root_user(){
   [[ ! -f /etc/ssh/sshd_config ]] && sudo ${PACKAGE_UPDATE[int]} && sudo ${PACKAGE_INSTALL[int]} openssh-server
   [[ -z $(type -P curl) ]] && sudo ${PACKAGE_UPDATE[int]} && sudo ${PACKAGE_INSTALL[int]} curl
 
-  #IP=$(curl ifconfig.me)
-  #IP6=$(curl 6.ipw.cn)
+  IP=$(curl ifconfig.me)
+  IP6=$(curl 6.ipw.cn)
 
   sudo lsattr /etc/passwd /etc/shadow >/dev/null 2>&1
   sudo chattr -i /etc/passwd /etc/shadow >/dev/null 2>&1
@@ -73,6 +73,7 @@ root_user(){
   sudo service sshd restart >/dev/null 2>&1
 
   yellow "VPS root登录信息设置完成！"
+  green "VPS登录地址：$IP:$sshport: $IP6:$sshport"
   green "用户名：root"
   green "密码：$password"
   yellow "请妥善保存好登录信息！然后重启VPS确保设置已保存！"
