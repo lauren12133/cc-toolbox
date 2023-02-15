@@ -499,7 +499,7 @@ menu() {
 }
 
 
-menu() {
+menu_docker() {
     clear
     echo "#############################################################"
     echo -e "#                   ${RED}安装docker${PLAIN}                  #"
@@ -534,7 +534,8 @@ menu(){
 	green "2. tcp调优"
         green "3. acme一键注册证书"
 	green "4. 安装x-ui"
-        green "5. 卸载程序"
+	green "5. 安装docker"
+        green "6. 卸载程序"
 	green "0. 退出"
 	echo "         "
 	read -p "请输入数字:" NumberInput
@@ -543,7 +544,8 @@ menu(){
 		2) tcp_up ;;
 		3) acme_rg ;;
 		4) install_xui ;;
-                5) rm -rf /root/tool.sh && read -p "回车重置变量:" NumberInput ;;
+		5) menu_docker ;;
+                6) rm -rf /root/tool.sh && read -p "回车重置变量:" NumberInput ;;
 		0) exit 1 ;;
 	esac
 }
