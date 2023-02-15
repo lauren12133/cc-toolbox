@@ -86,20 +86,6 @@ yellow "x-ui安装完成"
 back2menu
 }
 
-install_docker(){
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-yellow "docker安装完成"
-back2menu
-}
-
-install_docker_china(){
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh --mirror Aliyun
-yellow "docker安装完成"
-back2menu
-}
-
 tcp_up(){
 cat > '/etc/sysctl.conf' << EOF
 fs.file-max=1000000
@@ -498,30 +484,6 @@ menu() {
     menu
 }
 
-
-menu_docker() {
-    clear
-    echo "#############################################################"
-    echo -e "#                   ${RED}安装docker${PLAIN}                  #"
-    echo "#############################################################"
-    echo ""
-    echo -e " ${GREEN}1.${PLAIN} 国外机器"
-    echo -e " ${GREEN}2.${PLAIN} ${RED}国内机器${PLAIN}"
-    echo " -------------"
-    echo -e " ${GREEN}0.${PLAIN} 返回主菜单"
-    echo ""
-    read -rp "请输入选项 [0-9]: " NumberInput
-    case "$NumberInput" in
-        1) install_docker ;;
-        2) install_docker_china ;;
-        *) back1menu ;;
-    esac
-}
-    menu
-}
-
-
-
 menu(){
 	clear
 	red "=================================="
@@ -534,8 +496,7 @@ menu(){
 	green "2. tcp调优"
         green "3. acme一键注册证书"
 	green "4. 安装x-ui"
-	green "5. 安装docker"
-        green "6. 卸载程序"
+        green "5. 卸载程序"
 	green "0. 退出"
 	echo "         "
 	read -p "请输入数字:" NumberInput
@@ -544,8 +505,7 @@ menu(){
 		2) tcp_up ;;
 		3) acme_rg ;;
 		4) install_xui ;;
-		5) menu_docker ;;
-                6) rm -rf /root/tool.sh && read -p "回车重置变量:" NumberInput ;;
+                5) rm -rf /root/tool.sh && read -p "回车重置变量:" NumberInput ;;
 		0) exit 1 ;;
 	esac
 }
