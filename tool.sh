@@ -32,6 +32,7 @@ back1menu(){
   bash tool.sh
 }
 
+#root修改
 root_user(){
   REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'" "alpine")
   RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS" "Alpine")
@@ -80,12 +81,61 @@ root_user(){
   back2menu
 }
 
+########################################################################
+
+#安装x-ui
 install_xui(){
 bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
 yellow "x-ui安装完成"
 back2menu
 }
 
+########################################################################
+
+#安装docker
+docker(){
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+systemctl enable docker
+GREEN "安装完毕"
+}
+
+docker_china(){
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh --mirror Aliyun
+systemctl enable docker
+GREEN "安装完毕"
+}
+
+install_docker(){
+   clear
+   red "=================================="
+   green "            docker              "
+   red "        docker一键安装工具    "
+   echo "                           "
+   red "=================================="
+   echo " "
+   yellow "1.国外机安装 "
+   yellow "2.国内机安装 "
+   yellow "3.返回主菜单 "
+   read -p "请选择:(1,2,3):" choice
+
+   if (($choice == 1)); then
+     docker
+     back2menu
+
+   elif (($choice == 2)); then
+     docker_china
+     back2menu
+
+   elif (($choice == 3)); then
+     back1menu
+fi
+}
+
+########################################################################
+
+#TCP调优
 tcp_up(){
 cat > '/etc/sysctl.conf' << EOF
 fs.file-max=1000000
@@ -150,6 +200,9 @@ yellow "$bbr"
 back2menu
 }
 
+########################################################################
+
+#acme证书申请
 acme_rg(){
 REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'" "fedora")
 RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS" "Fedora")
@@ -484,6 +537,9 @@ menu() {
     menu
 }
 
+########################################################################
+
+
 menu(){
 	clear
 	red "=================================="
@@ -496,7 +552,8 @@ menu(){
 	green "2. tcp调优"
         green "3. acme一键注册证书"
 	green "4. 安装x-ui"
-        green "5. 卸载程序"
+	green "5. 安装docker"
+        green "6. 卸载程序"
 	green "0. 退出"
 	echo "         "
 	read -p "请输入数字:" NumberInput
@@ -505,7 +562,8 @@ menu(){
 		2) tcp_up ;;
 		3) acme_rg ;;
 		4) install_xui ;;
-                5) rm -rf /root/tool.sh && read -p "回车重置变量:" NumberInput ;;
+		5) install_docker ;;
+                6) rm -rf /root/tool.sh && read -p "回车重置变量:" NumberInput ;;
 		0) exit 1 ;;
 	esac
 }
