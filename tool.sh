@@ -498,6 +498,30 @@ menu() {
     menu
 }
 
+
+menu() {
+    clear
+    echo "#############################################################"
+    echo -e "#                   ${RED}安装docker${PLAIN}                  #"
+    echo "#############################################################"
+    echo ""
+    echo -e " ${GREEN}1.${PLAIN} 国外机器"
+    echo -e " ${GREEN}2.${PLAIN} ${RED}国内机器${PLAIN}"
+    echo " -------------"
+    echo -e " ${GREEN}0.${PLAIN} 返回主菜单"
+    echo ""
+    read -rp "请输入选项 [0-9]: " NumberInput
+    case "$NumberInput" in
+        1) install_docker ;;
+        2) install_docker_china ;;
+        *) back1menu ;;
+    esac
+}
+    menu
+}
+
+
+
 menu(){
 	clear
 	red "=================================="
