@@ -86,6 +86,20 @@ yellow "x-ui安装完成"
 back2menu
 }
 
+install_docker(){
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+yellow "docker安装完成"
+back2menu
+}
+
+install_docker_china(){
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh --mirror Aliyun
+yellow "docker安装完成"
+back2menu
+}
+
 tcp_up(){
 cat > '/etc/sysctl.conf' << EOF
 fs.file-max=1000000
