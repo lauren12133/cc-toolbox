@@ -97,14 +97,12 @@ docker(){
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
 systemctl enable docker
-GREEN "安装完毕"
 }
 
 docker_china(){
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh --mirror Aliyun
 systemctl enable docker
-GREEN "安装完毕"
 }
 
 install_docker(){
