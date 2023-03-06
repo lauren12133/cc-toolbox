@@ -336,8 +336,8 @@ acme_standalone(){
     domainIP=$(curl -sm8 ipget.net/?ip="${domain}")
     
     if [[ $domainIP == $ipv6 ]]; then
-        ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256 --renew-hook 
-	~/.acme.sh/acme.sh --listen-v6 --install-cert -d ${domain} --key-file /root/key.pem --fullchain-file /root/cert.pem --ecc
+        bash ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256 --renew-hook 
+	bash ~/.acme.sh/acme.sh --listen-v6 --install-cert -d ${domain} --key-file /root/key.pem --fullchain-file /root/cert.pem --ecc
     fi
     if [[ $domainIP == $ipv4 ]]; then
         bash ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256 --renew-hook 
@@ -381,9 +381,11 @@ acme_cfapiTLD(){
     [[ -z $domain ]] && red "未输入CloudFlare的登录邮箱, 无法执行操作!" && exit 1
     export CF_Email="$CFemail"
     if [[ -z $ipv4 ]]; then
-        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "${domain}" -k ec-256 --renew-hook --listen-v6 --install-cert -d ${domain} --key-file /root/key.pem --fullchain-file /root/cert.pem --ecc
+        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "${domain}" -k ec-256 --renew-hook --listen-v6 
+	bash ~/.acme.sh/acme.sh --install-cert -d ${domain} --key-file /root/key.pem --fullchain-file /root/cert.pem --ecc
     else
-        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "${domain}" -k ec-256 --renew-hook --install-cert -d ${domain} --key-file /root/key.pem --fullchain-file /root/cert.pem --ecc
+        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "${domain}" -k ec-256 --renew-hook 
+	bash ~/.acme.sh/acme.sh --install-cert -d ${domain} --key-file /root/key.pem --fullchain-file /root/cert.pem --ecc
     fi
     checktls
 }
@@ -405,9 +407,11 @@ acme_cfapiNTLD(){
     [[ -z $domain ]] && red "未输入CloudFlare的登录邮箱, 无法执行操作!" && exit 1
     export CF_Email="$CFemail"
     if [[ -z $ipv4 ]]; then
-        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "*.${domain}" -d "${domain}" -k ec-256 --renew-hook --listen-v6 --install-cert -d ${domain} --key-file /root/key.pem --fullchain-file /root/cert.pem --ecc
+        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "*.${domain}" -d "${domain}" -k ec-256 --renew-hook --listen-v6 
+	bash ~/.acme.sh/acme.sh --install-cert -d ${domain} --key-file /root/key.pem --fullchain-file /root/cert.pem --ecc
     else
-        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "*.${domain}" -d "${domain}" -k ec-256 --renew-hook --install-cert -d ${domain} --key-file /root/key.pem --fullchain-file /root/cert.pem --ecc
+        bash ~/.acme.sh/acme.sh --issue --dns dns_cf -d "*.${domain}" -d "${domain}" -k ec-256 --renew-hook 
+	bash ~/.acme.sh/acme.sh --install-cert -d ${domain} --key-file /root/key.pem --fullchain-file /root/cert.pem --ecc
     fi
     checktls
 }
