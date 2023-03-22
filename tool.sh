@@ -85,7 +85,7 @@ root_user(){
 
 #安装x-ui
 install_xui(){
-bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install.sh)
 yellow "x-ui安装完成"
 back2menu
 }
