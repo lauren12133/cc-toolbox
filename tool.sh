@@ -52,7 +52,7 @@ root_user(){
   [[ ! -f /etc/ssh/sshd_config ]] && sudo ${PACKAGE_UPDATE[int]} && sudo ${PACKAGE_INSTALL[int]} openssh-server
   [[ -z $(type -P curl) ]] && sudo ${PACKAGE_UPDATE[int]} && sudo ${PACKAGE_INSTALL[int]} curl
 
-  IP=$(curl ifconfig.me)
+  IP=$(curl 4.ipw.cn)
   IP6=$(curl 6.ipw.cn)
 
   sudo lsattr /etc/passwd /etc/shadow >/dev/null 2>&1
@@ -315,7 +315,7 @@ acme_standalone(){
         wg-quick down wgcf >/dev/null 2>&1
     fi
     
-    ipv4=$(curl ifconfig.me)
+    ipv4=$(curl 4.ipw.cn)
     ipv6=$(curl 6.ipw.cn)
     
     echo ""
