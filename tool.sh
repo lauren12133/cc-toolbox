@@ -83,6 +83,25 @@ root_user(){
 
 ########################################################################
 
+#安装1Panel
+install_1panel(){
+yellow "依赖curl工具安装前请先安装"
+curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh && bash quick_start.sh
+yellow "1panel安装完成"
+back2menu
+}
+
+########################################################################
+#安装3x-ui
+install_3xui(){
+bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+yellow "3x-ui安装完成"
+back2menu
+}
+
+
+########################################################################
+
 #安装x-ui
 install_xui(){
 bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install.sh)
@@ -556,8 +575,10 @@ menu(){
 	green "2. tcp调优"
         green "3. acme一键注册证书"
 	green "4. 安装x-ui"
-	green "5. 安装docker"
-        green "6. 卸载程序"
+        green "5. 安装3x-ui"
+	green "6. 安装1Panel"
+	green "7. 安装docker"
+        green "8. 卸载程序"
 	green "0. 退出"
 	echo "         "
 	read -p "请输入数字:" NumberInput
@@ -566,8 +587,10 @@ menu(){
 		2) tcp_up ;;
 		3) acme_rg ;;
 		4) install_xui ;;
-		5) install_docker ;;
-                6) rm -rf /root/tool.sh && read -p "回车重置变量:" NumberInput ;;
+                5) install_3xui ;;
+                6) install_1panel;;
+		7) install_docker ;;
+                8) rm -rf /root/tool.sh && read -p "回车重置变量:" NumberInput ;;
 		0) exit 1 ;;
 	esac
 }
